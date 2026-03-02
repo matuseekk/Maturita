@@ -26,8 +26,5 @@
 - 
 
 ## Mini-tahak (na 30–60 s)
-- 
-- 
+- Porovnávat Linux s windowsem, protože to zabírá hodně času
 
-## Zdroje
-- 
