@@ -1,82 +1,176 @@
-# 15. Metody trid (navratovy typ, parametry, modifikatory pristupu)
+# 15. Metody trid (navratovy typ, parametry, modifikatory pristupu) – prehled
 
 ## Cile (co musis umet rict)
-- Co je metoda v kontextu tridy a proc se pouziva (chovani objektu).
-- Jak vypada **hlavicka metody**: modifikator pristupu, (prip. dalsi modifikatory), navratovy typ, nazev, parametry.
-- Rozdil mezi **procedurou** (`void`) a **funkci** (vraci hodnotu).
-- Parametry: hodnotove vs referencni (`ref`, `out`), volitelne, `params`.
-- Pretezovani metod (overloading) + priklady.
-- Zaklady: `static` vs instancni metoda, scope (`this`), kdy metodu volam na objektu/tride.
-- Ukazky, na kterych se da mluvit 10–15 minut (vysvetleni + mini demo).
+- Co je metoda v kontextu tridy a proc se pouziva (chovani objektu)
+- Jak vypada hlavicka metody:
+  - modifikator pristupu
+  - (pripadne dalsi modifikatory)
+  - navratovy typ
+  - nazev
+  - parametry
+- Rozdil mezi:
+  - procedurou (`void`)
+  - funkci (vraci hodnotu)
+- Parametry:
+  - hodnotove
+  - referencni (`ref`, `out`)
+  - volitelne
+  - `params`
+- Pretezovani metod (overloading) + priklady
+- Zaklady:
+  - `static` vs instancni metoda
+  - scope (`this`)
+  - kdy metodu volam na objektu/tride
+- Ukazky, na kterych se da mluvit 10–15 minut (vysvetleni + mini demo)
 
 ---
 
 ## Co je metoda tridy
-**Metoda** je cast tridy, ktera obsahuje vykonatelny kod (logiku). Popisuje, **co objekt umi delat**.
-
-- Atributy/pole/vlastnosti = *co objekt ma (data)*
-- Metody = *co objekt dela (chovani)*
-
-V OOP je bezne, ze metoda pracuje s daty objektu (vlastnostmi) a meni je nebo z nich pocita vysledky.
+- Metoda = cast tridy s vykonatelnym kodem (logikou)
+- Popisuje, co objekt umi delat (chovani)
+- Rozdeleni v OOP:
+  - atributy/pole/vlastnosti = co objekt ma (data)
+  - metody = co objekt dela (chovani)
+- Metody casto:
+  - pracuji s vlastnostmi objektu
+  - meni stav objektu
+  - nebo pocitaji vysledek a vraci ho
 
 ---
 
-## Hlavicka metody (podle ucitele „zacina hlavickou“)
-Typicky ma metoda tvar:
+## Hlavicka metody (z ceho se sklada)
+- Modifikator pristupu: `public`, `private`, `protected`, `internal`
+- Dalsi modifikatory (volitelne): `static`, `virtual`, `override`, `abstract`, `async`…
+- Navratovy typ
+- Nazev metody
+- Parametry v kulatych zavorkach `(...)`
 
-- **modifikator pristupu** (`public`, `private`, `protected`, `internal`)
-- pripadne dalsi modifikatory (`static`, `virtual`, `override`, `abstract`, `async`…)
-- **navratovy typ**
-- **nazev metody**
-- **parametry** v kulatych zavorkach `(...)`
-
-Priklad hlavicky:
+Priklad:
 - `public int Mocnina(int x)`
 
 ---
 
 ## Modifikatory pristupu (access modifiers)
-- **public** – pristupna odkudkoliv
-- **private** – pristupna jen uvnitr tridy (nejcastejsi pro pomocne metody)
-- **protected** – pristupna v tride a u potomku (pri dedeni)
-- **internal** – pristupna jen v ramci projektu/assembly
-- **protected internal / private protected** – kombinace (spis navic)
-
-U maturity casto staci rozumet hlavne `public` vs `private`.
+- `public` – pristupna odkudkoliv
+- `private` – pristupna jen uvnitr tridy (casto pomocne metody)
+- `protected` – pristupna v tride a u potomku (pri dedeni)
+- `internal` – pristupna jen v ramci projektu/assembly
+- `protected internal` / `private protected` – kombinace (spis doplnkove)
 
 ---
 
 ## Navratovy typ: procedura vs funkce
-Tvoje myslenka je spravna: podle navratoveho typu rozlisujeme:
-
-### Procedura (void)
+### Procedura (`void`)
 - nema navratovou hodnotu
-- jeji ukol je „neco udelat“ (zobrazit, ulozit, zmenit stav objektu…)
-
-V C# je to metoda s navratovym typem `void`.
+- ucel: „neco udelat“ (zobrazit, ulozit, zmenit stav objektu)
 
 ### Funkce (vraci hodnotu)
-- neco vypocita a **vrati**
+- neco vypocita a vrati hodnotu pomoci `return`
 - vysledek typicky:
-  1) **priradim do promenne**, nebo
-  2) pouziju jako soucast vyrazu / parametr jine metody
-
-Napriklad:
-- `int vysledek = Mocnina(4);`
-- `Console.WriteLine(Mocnina(4));`  *(funkce je parametr jine metody)*
-
-> Dulezite: Funkce nemusí „vracet jen int“. Muze vracet libovolny typ (string, bool, objekt, list…).
+  - priradim do promenne  
+    - `int vysledek = Mocnina(4);`
+  - nebo pouziju jako parametr / ve vyrazu  
+    - `Console.WriteLine(Mocnina(4));`
+- funkce muze vracet libovolny typ (int/string/bool/objekt/list…)
 
 ---
 
-## Parametry metody
-Parametry urcuji, co metoda potrebuje na vstupu.
+## Parametry metody (prehled + mini priklady)
+### 1) Hodnotove parametry (default)
+- bezny zpusob predani hodnoty do metody
+- priklad:
+  - `int Pricist(int a, int b)`
 
-### Hodnotove parametry (default)
-Vetsina parametru se predava hodnotou (u hodnotovych typu kopie, u referencnich typu kopie reference).
+### 2) `out` (vraceni vice hodnot / vysledku)
+- kdyz chces z metody dostat vice informaci
+- priklad:
+  - `bool ZkusParsovatInt(string text, out int cislo)`
+- volani:
+  - `if (ZkusParsovatInt("123", out int x)) { ... }`
 
-```csharp name=examples/Methods.cs
-public int Pricist(int a, int b)
-{
-    return a + b;
-}
+### 3) `ref` (upravovani existujici promenne)
+- metoda muze zmenit hodnotu promenne predane odkazem
+- priklad:
+  - `void Zvys(ref int x)`
+
+### 4) Volitelne parametry (default hodnota)
+- parametr ma vychozi hodnotu, nemusis ho pri volani vyplnit
+- priklad:
+  - `void Pozdrav2(string jmeno = "kamarade")`
+
+### 5) `params` (promenny pocet argumentu)
+- muzes poslat libovolny pocet hodnot
+- priklad:
+  - `int Soucet(params int[] cisla)`
+- volani:
+  - `Soucet(1, 2, 3, 4);`
+
+---
+
+## Static vs instancni metody
+### Instancni metody
+- volas na objektu
+- muzou pracovat se stavem objektu (`this`)
+- priklad:
+  - `ucet.Deposit(100);`
+
+### Static metody
+- patri tride, ne konkretni instanci
+- volas pres nazev tridy
+- casto „utility“ funkce
+- priklad:
+  - `Math.Sin(x);`
+
+---
+
+## Priklad: metody meni stav objektu (BankAccount)
+- `Deposit` / `Withdraw`:
+  - procedury (`void`)
+  - meni stav (`Balance`)
+  - validuji vstup + mohou vyhodit vyjimku
+- `CanWithdraw`:
+  - funkce (vraci `bool`)
+  - nic nemeni, jen informuje
+- zapouzdreni:
+  - `Balance` ma `private set` (zvenku nejde libovolne menit)
+
+---
+
+## Pretezovani metod (overloading)
+- stejne jmeno, jina signatura (pocet/typ parametru)
+- priklad:
+  - `Soucet(int a, int b)`
+  - `Soucet(int a, int b, int c)`
+- kompilator vybere spravnou variantu podle argumentu pri volani
+
+---
+
+## Navaznost na WinForms: obsluzna metoda udalosti
+- Ve WinForms jsou metody casto „event handlers“ (obsluzne metody)
+- typicky priklad:
+  - `private void button1_Click(object sender, EventArgs e)`
+- co rict:
+  - je to procedura (`void`) – reaguje na udalost (klik)
+  - `sender` = kdo udalost vyvolal (napr. Button)
+  - `e` = data o udalosti (EventArgs nebo potomci)
+  - Visual Studio umi metodu vytvorit a napojit na `Click` (designer)
+
+---
+
+## Doporucena osnova na 15 minut mluveni
+- Co je metoda, proc existuje (2 min)
+- Hlavicka metody + modifikatory pristupu (2–3 min)
+- Procedura vs funkce + prirazeni / parametr (3 min)
+- Parametry (`out/ref`, volitelne, `params`) (4–5 min)
+- `static` vs instancni + pretezovani (2–3 min)
+- BankAccount (OOP, zapouzdreni, validace) (3–5 min)
+- WinForms event handler (1–2 min)
+
+---
+
+## Mini-tahak (30–60 s)
+- Metoda = kod v tride (chovani). Hlavicka: pristup + navratovy typ + nazev + parametry.
+- `void` = procedura (neco udela). Funkce vraci hodnotu -> priradim nebo pouziju jako parametr.
+- Parametry: normalni, `out/ref`, volitelne, `params`.
+- Metody: instancni nebo `static`, mohou byt pretezene.
+- WinForms: metody casto obsluhuji udalosti (napr. `button_Click`).
