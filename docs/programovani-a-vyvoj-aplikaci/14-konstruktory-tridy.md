@@ -1,21 +1,34 @@
-# 14. Konstruktor třídy, přetížené konstruktory, konstruktor s parametrem a bezparametrický
+# 14. Konstruktory tříd (bezparametrický, s parametrem, přetížené)
 
 ## Cíle (co musíš umět říct)
-- Vysvětlit, co je konstruktor, kdy se volá a proč nemá návratový typ.
-- Popsat rozdíl mezi bezparametrickým a parametrickým konstruktorem.
-- Uvést příklady přetížených konstruktorů a řetězení pomocí `: this(...)`.
+- Co je konstruktor a kdy se volá.
+- K čemu slouží inicializace objektu (nastavení výchozích hodnot, kontrola vstupu).
+- Druhy konstruktorů:
+  - bezparametrický
+  - parametrický
+  - přetížené konstruktory
+- Jak funguje `this` v konstruktoru.
+- Co je řetězení konstruktorů (`: this(...)`) a proč se používá.
+- Praktické příklady z C# i ze života (aby bylo na ~15 minut povídání).
+- Rozdíl konstruktor vs. metoda, zmínka o destruktoru / finalizeru a o `IDisposable`.
 
 ---
 
 ## Osnova
-1. Definice konstruktoru (co to je, kdy se volá, žádný návratový typ)
-2. Inicializace objektu – co nastavuje
-3. Bezparametrický vs. parametrický konstruktor + ukázky
-4. `this` a přiřazení parametru do atributu
-5. Přetížené konstruktory + proč se používají
-6. Řetězení `: this(...)` a výhoda oproti opakování kódu
-7. Validace v konstruktoru + příklad
-8. Mini-tahák
+1. Úvod — proč konstruktor
+2. Základní vlastnosti konstruktoru
+3. Inicializace objektu — co to znamená
+4. Bezparametrický konstruktor + ukázka
+5. Parametrický konstruktor + ukázka
+6. `this` v konstruktoru
+7. Přetížené konstruktory (overloading)
+8. Řetězení konstruktorů (`: this(...)`)
+9. Validace v konstruktoru
+10. Konstruktor vs. metoda
+11. Destruktor / Finalizer a `IDisposable`
+12. Příklady ze života
+13. Doporučená osnova na 15 minut
+14. Mini-tahák
 
 ---
 
@@ -27,16 +40,44 @@
 - **`this`:** odkaz na aktuální instanci objektu; v konstruktoru rozlišuje atribut (`this.barva`) od parametru (`barva`).
 - **Řetězení konstruktorů:** volání jiného konstruktoru stejné třídy pomocí `: this(...)`.
 - **Validace:** kontrola vstupních hodnot přímo v konstruktoru; při neplatném vstupu se vyhodí výjimka.
+- **Destruktor / Finalizer:** metoda volaná při uvolnění objektu z paměti (garbage collector); v C# zapsaná jako `~NazevTridy()`.
+- **`IDisposable`:** rozhraní pro deterministické uvolnění zdrojů (soubory, spojení); voláme `Dispose()` nebo blok `using`.
 
 ---
 
-## Definice konstruktoru
+## Úvod — proč konstruktor
 
-Konstruktor je speciální metoda, která se **automaticky volá při vytvoření objektu** (`new`).
+Konstruktor je základní mechanismus tříd v objektově orientovaném programování pro vytvoření nových instancí v konzistentním stavu. Bez konstruktoru by vytváření objektu často znamenalo „vytvořím prázdný objekt" a pak krok po kroku nastavím vlastnosti. Konstruktor umožňuje:
 
-- Má **stejný název jako třída**.
+- zajistit, že objekt bude mít všechny povinné hodnoty hned po vytvoření,
+- provádět základní validaci vstupů,
+- nastavit výchozí hodnoty,
+- případně alokovat zdroje (např. otevřít spojení nebo soubor).
+
+**Přirovnání ze života:** když si kupuješ auto, nedostaneš prázdné šasi — dostaneš auto s motorem, koly a základním vybavením. Konstruktor „sestaví" objekt správně.
+
+---
+
+## Základní vlastnosti konstruktoru
+
+- Název konstruktoru je **stejný jako název třídy**.
 - **Nemá návratový typ** (ani `void`).
-- Jeho úkolem je **inicializovat objekt** – nastavit atributy/vlastnosti na výchozí nebo zadané hodnoty.
+- Volá se automaticky při použití `new`.
+- Může být přetížen (více konstruktorů s různými parametry).
+- Může obsahovat logiku (přiřazení, kontrolu, volání dalších metod, logování...).
+
+---
+
+## Inicializace objektu — co to znamená
+
+Inicializace = přiřazení hodnot do atributů/vlastností tak, aby objekt dával smysl a byl v použitelném stavu.
+
+Co se obvykle dělá v konstruktoru:
+- přiřazování vlastností z argumentů,
+- nastavení výchozích hodnot (pokud argumenty chybějí),
+- validace (kontrola rozsahů, null-check),
+- zajištění invariantu třídy (stavy, které musí platit po celou dobu života objektu),
+- volání pomocných metod pro složitější inicializaci.
 
 ---
 
@@ -47,16 +88,16 @@ Konstruktor bez parametrů – nastaví výchozí hodnoty automaticky.
 ```csharp
 public class Auto
 {
-    public string Značka { get; }
-    public int RokVýroby { get; }
-    public string Barva { get; }
+    public string Značka { get; set; }
+    public int RokVýroby { get; set; }
+    public string Barva { get; set; }
 
     // bezparametrický konstruktor
     public Auto()
     {
         Značka = "Neznámá";
         RokVýroby = 2000;
-        Barva = "šedá";
+        Barva = "bílá";
     }
 }
 ```
@@ -124,7 +165,7 @@ Přesně odpovídá zápisu: „`this.barva = barva` – atributu je přiřazen 
 
 ---
 
-## Přetížené konstruktory (overloading)
+## Přetížené konstruktor
 
 Přetížené konstruktory = v jedné třídě máš více konstruktorů s různými parametry.
 
@@ -179,7 +220,7 @@ var a3 = new Auto("Ford", 2008, "bílá");
 
 ---
 
-## Řetězení konstruktorů (doporučená praxe)
+## Řetězení konstrukt
 
 Aby se neopakoval kód, konstruktory se často řetězí:
 
@@ -243,6 +284,74 @@ public class Auto
 
 ---
 
+## Konstruktor vs. metoda
+
+| Vlastnost | Konstruktor | Metoda |
+|-----------|------------|--------|
+| Název | Stejný jako třída | Libovolný |
+| Návratový typ | Žádný (ani `void`) | Má návratový typ (nebo `void`) |
+| Kdy se volá | Automaticky při `new` | Explicitně voláme na objektu |
+| Počet | Může být přetížen | Může být přetížena |
+| Účel | Inicializace objektu | Operace nad objektem |
+
+**Důležité:** konstruktor **není** metoda — nemůžeš ho zavolat ručně jako `auto.Auto()`.
+
+---
+
+## Destruktor / Finalizer a `IDisposable`
+
+### Destruktor (Finalizer)
+
+- Destruktor se volá, když **garbage collector** uvolňuje objekt z paměti.
+- V C# se zapisuje jako `~NazevTridy()`.
+- **Nevíme přesně kdy** se zavolá — záleží na GC.
+- Použití: uvolnění nespravovaných zdrojů (COM objekty, nativní handles).
+
+```csharp
+public class Auto
+{
+    ~Auto()
+    {
+        // úklid při zničení objektu (GC)
+    }
+}
+```
+
+### `IDisposable` — deterministické uvolnění zdrojů
+
+Pokud objekt drží zdroje (soubor, databázové spojení, síťový socket), implementujeme `IDisposable`:
+
+```csharp
+public class Soubor : IDisposable
+{
+    private FileStream _stream;
+
+    public Soubor(string cesta)
+    {
+        _stream = File.OpenRead(cesta);
+    }
+
+    public void Dispose()
+    {
+        _stream?.Dispose();
+    }
+}
+```
+
+**Použití s `using` (doporučeno):**
+```csharp
+using (var soubor = new Soubor("data.txt"))
+{
+    // práce se souborem
+} // Dispose() se zavolá automaticky na konci bloku
+```
+
+**Co říct:**
+- `IDisposable` + `using` = deterministické uvolnění zdrojů (víme přesně kdy).
+- Destruktor = nedeterministické (GC rozhodne sám).
+
+---
+
 ## Příklady ze života (jak to říct u maturity)
 
 Konstruktor = „když něco vytvářím, musím tomu dát základní parametry":
@@ -267,6 +376,7 @@ Konstruktor = „když něco vytvářím, musím tomu dát základní parametry"
 5. Přetížené konstruktory + proč se používají (2–3 min)
 6. Řetězení `: this(...)` a výhoda oproti opakování kódu (2–3 min)
 7. Validace v konstruktoru + příklad (1–2 min)
+8. (Bonus) Konstruktor vs. metoda, destruktor, `IDisposable` (1–2 min)
 
 ---
 
@@ -277,8 +387,11 @@ Konstruktor = „když něco vytvářím, musím tomu dát základní parametry"
 - Druhy: bezparametrický, parametrický, přetížené.
 - `this` rozlišuje atribut vs. parametr a umožňuje řetězení `: this(...)`.
 - Konstruktor může dělat validaci, aby nevznikl „špatný" objekt.
+- Destruktor (`~Trida()`) = GC ho volá sám; `IDisposable` + `using` = voláme sami.
 
 ---
 
 ## Zdroje
 - [Microsoft Docs – Constructors (C#)](https://learn.microsoft.com/cs-cz/dotnet/csharp/programming-guide/classes-and-structs/constructors)
+- [Microsoft Docs – Destructors (C#)](https://learn.microsoft.com/cs-cz/dotnet/csharp/programming-guide/classes-and-structs/destructors)
+- [Microsoft Docs – IDisposable](https://learn.microsoft.com/cs-cz/dotnet/api/system.idisposable)
